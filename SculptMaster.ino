@@ -29,10 +29,10 @@ void loop() {
     {acc.x, acc.y, acc.z},   // acc
     {rot.x, rot.y, rot.z},   // gyro
     {
-      pinch_detector(PinchDetector::Finger::INDEX), 
-      pinch_detector(PinchDetector::Finger::MIDDLE), 
-      pinch_detector(PinchDetector::Finger::RING), 
-      pinch_detector(PinchDetector::Finger::PINKY)
+      pinch_detector.ReadPinch(PinchDetector::Finger::INDEX), 
+      pinch_detector.ReadPinch(PinchDetector::Finger::MIDDLE), 
+      pinch_detector.ReadPinch(PinchDetector::Finger::RING), 
+      pinch_detector.ReadPinch(PinchDetector::Finger::PINKY)
     }          // buttons
   };
   bleGlove.update(state);

@@ -15,14 +15,7 @@ private:
   Vect rotSpeed;
   Vect acceleration;
   const String labels[3] = {"X", "Y", "Z"};
-  LCD lcd;
   Adafruit_MPU6050 mpu;
-  const float POWER_EXPONENT = 1.8;
-  float applyPowerCurve(float inputVal);
-
-  const float SMOOTHING_FACTOR = 0.15;
-  float computeSmoothing(float currentRaw, float previousSmoothed, float exponent);
-
 };
 
 #endif
