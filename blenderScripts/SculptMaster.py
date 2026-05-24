@@ -33,19 +33,6 @@ mouse_sensitivity = 3.0
 move_speed = 0.2
 rot_speed = 1.0
 
-# Moyenne à decay exponentiel. Alpha varie entre 0 et 1. 1 Priorise les nouvelles valeurs et 0 priorise les vielles
-class MovingAverage:
-    def __init__(self, alpha):
-        self.alpha = alpha
-        self.moving_average = 0
-    
-    def push_val(self, val):
-        self.moving_average = self.alpha * val + (1 - self.alpha) * self.moving_average
-
-    def get(self):
-        return self.moving_average
-
-
 def handle_data(sender, data):
     if len(data) != PACKET_SIZE:
         return
@@ -146,9 +133,9 @@ def apply_glove():
             "buttons": glove_state["buttons"][:],
         }
 
+    print(g)
     ax, ay, az = g["linear_accel"]
     wx, wy, wz = g["angular_vel"]
-    g["buttons"][0] = True
 
     if g["buttons"][0]:
         forward = rv3d.view_rotation @ Vector((0, 0, -1))
