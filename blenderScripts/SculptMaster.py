@@ -31,7 +31,7 @@ last_click = False
 deadzone = 0.05
 mouse_sensitivity = 3.0
 move_speed = 0.2
-rot_speed = 0.5
+rot_speed = 1.0
 
 # Moyenne à decay exponentiel. Alpha varie entre 0 et 1. 1 Priorise les nouvelles valeurs et 0 priorise les vielles
 class MovingAverage:
@@ -148,21 +148,24 @@ def apply_glove():
 
     ax, ay, az = g["linear_accel"]
     wx, wy, wz = g["angular_vel"]
-    g["buttons"][1] = True
+    g["buttons"][0] = True
 
     if g["buttons"][0]:
-        rv3d.view_location.x += ax * move_speed
-        rv3d.view_location.y += ay * move_speed
-        rv3d.view_location.z += az * move_speed
+        forward = rv3d.view_rotation @ Vector((0, 0, -1))
+        right   = rv3d.view_rotation @ Vector((1, 0, 0))
+        up = rv3d.view_rotation @ Vector((0, 1, 0))
+
+        move = (wx * forward) + (-wy * right) + (-wz * up)
+
+        rv3d.view_location += move * move_speed
 
     if g["buttons"][1]:
-        scaled_w = (wx * rot_speed, 
+        scaled_w = Vector((wx * rot_speed, 
                     wy * rot_speed, 
-                    wz * rot_speed)
-        delta = angular_velocity_to_quat(scaled_w, dt)
-        camera_rot = delta @ camera_rot
-        camera_rot.normalize()
-        rv3d.view_rotation = camera_rot.inverted()
+                    wz * rot_speed))
+        local_w = rv3d.view_rotation @ scaled_w
+        delta = angular_velocity_to_quat(local_w, dt)
+        rv3d.view_rotation = delta.inverted() @ rv3d.view_rotation
 
     if g["buttons"][2]:
         dx = ax if abs(ax) > deadzone else 0
@@ -183,6 +186,8 @@ def update():
     if running:
         apply_glove()
     return 0.005
+
+
 
 class VIEW3D_OT_start(bpy.types.Operator):
     bl_idname = "view3d.glove_start"
