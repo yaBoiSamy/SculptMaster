@@ -24,30 +24,46 @@ public:
         BLEGlove* bleGlove;
     public:
         ServerCallbacks(BLEGlove* glove) : bleGlove(glove) {}
-        void onConnect(NimBLEServer* pServer) override {
+        void onConnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo) override {
+            Serial.println("connection");
             bleGlove->deviceConnected = true;
         }
-        void onDisconnect(NimBLEServer* pServer) override {
+
+        void onDisconnect(NimBLEServer* pServer, NimBLEConnInfo& connInfo, int reason) override {
             bleGlove->deviceConnected = false;
             NimBLEDevice::startAdvertising();
         }
     };
 
     void setup() {
+        Serial.println("BLE init");
         NimBLEDevice::init("Glove");
+        NimBLEDevice::setPower(ESP_PWR_LVL_P9);
+
+        Serial.println("create server");
         NimBLEServer* server = NimBLEDevice::createServer();
         server->setCallbacks(new ServerCallbacks(this));
+
+        Serial.println("create service");
         NimBLEService* service = server->createService(SERVICE_UUID);
 
         pCharacteristic = service->createCharacteristic(
             CHARACTERISTIC_UUID,
-            NIMBLE_PROPERTY::NOTIFY
+            NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::READ
         );
         service->start();
 
+        Serial.println("start advertising");
+
         NimBLEAdvertising* advertising = NimBLEDevice::getAdvertising();
+
         advertising->addServiceUUID(SERVICE_UUID);
-        advertising->start();
+        advertising->setName("Glove");
+        advertising->enableScanResponse(true);
+
+        NimBLEDevice::startAdvertising();
+
+        Serial.println("advertising started");
     }
 
     void update(PCB& pcb) {
@@ -58,7 +74,7 @@ public:
         state.acc[1] = acc.y;
         state.acc[2] = acc.z;
 
-        Vect gyro = pcb.get_ang();
+        Vect gyro = pcb.get_rot();
         state.gyro[0] = gyro.x;
         state.gyro[1] = gyro.y;
         state.gyro[2] = gyro.z;
