@@ -7,9 +7,10 @@
 class PCB {
 public:
   PCB();
+  void init();
   void update();
   Vect get_acc();
-  Vect get_ang();
+  Vect get_rot();
 private:
   Vect rotSpeed;
   Vect acceleration;

@@ -3,7 +3,9 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 
-PCB::PCB() {
+PCB::PCB() {}
+
+void PCB::init() {
   String labels[3] = {"X", "Y", "Z"};
   double* values[3] = {&rotSpeed.x, &rotSpeed.y, &rotSpeed.z};
   lcd = LCD(labels, values, 3);
@@ -35,6 +37,6 @@ Vect PCB::get_acc() {
   return acceleration;
 }
 
-Vect PCB::get_ang() {
+Vect PCB::get_rot() {
   return rotSpeed;
 }
