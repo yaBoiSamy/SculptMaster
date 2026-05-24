@@ -36,7 +36,10 @@ Vect Vect::normalize() const {
 
 // String conversion for printing
 String Vect::str() const {
-  return "( " + String(x) + " , " + String(y) + " , " + String(z) + " )";
+  return "(" +
+       String(x >= 0 ? " " : "") + String(x) + ", " +
+       String(y >= 0 ? " " : "") + String(y) + ", " +
+       String(z >= 0 ? " " : "") + String(z) + ")";
 }
 
 // Overloading the [] operator for reading and writing
