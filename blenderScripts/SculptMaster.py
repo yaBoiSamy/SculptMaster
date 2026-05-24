@@ -33,9 +33,6 @@ mouse_sensitivity = 3.0
 move_speed = 0.2
 rot_speed = 1.0
 
-GRAVITY = 9.81
-alpha = 0.1
-
 def handle_data(sender, data):
     if len(data) != PACKET_SIZE:
         return
@@ -144,7 +141,6 @@ def apply_glove():
         forward = rv3d.view_rotation @ Vector((0, 0, -1))
         right   = rv3d.view_rotation @ Vector((1, 0, 0))
         up = rv3d.view_rotation @ Vector((0, 1, 0))
-
 
         move = (wx * forward) + (-wy * right) + (-wz * up)
 
