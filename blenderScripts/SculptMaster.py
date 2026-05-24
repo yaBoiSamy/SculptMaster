@@ -137,7 +137,7 @@ def apply_glove():
     ax, ay, az = g["linear_accel"]
     wx, wy, wz = g["angular_vel"]
 
-    if g["buttons"][0]:
+    if g["buttons"][2]:
         forward = rv3d.view_rotation @ Vector((0, 0, -1))
         right   = rv3d.view_rotation @ Vector((1, 0, 0))
         up = rv3d.view_rotation @ Vector((0, 1, 0))
@@ -154,7 +154,7 @@ def apply_glove():
         delta = angular_velocity_to_quat(local_w, dt)
         rv3d.view_rotation = delta.inverted() @ rv3d.view_rotation
 
-    if g["buttons"][2]:
+    if g["buttons"][0]:
         dx = ax if abs(ax) > deadzone else 0
         dy = ay if abs(ay) > deadzone else 0
         pyautogui.moveRel(dx * mouse_sensitivity, dy * mouse_sensitivity)
