@@ -18,7 +18,6 @@ class BLEGlove {
 public:
     NimBLECharacteristic* pCharacteristic;
     bool deviceConnected = false;
-    GloveState state;
 
     class ServerCallbacks : public NimBLEServerCallbacks {
         BLEGlove* bleGlove;
@@ -66,21 +65,8 @@ public:
         Serial.println("advertising started");
     }
 
-    void update(PCB& pcb) {
+    void update(GloveState state) {
         if (!deviceConnected) return;
-
-        Vect acc = pcb.get_acc();
-        state.acc[0] = acc.x;
-        state.acc[1] = acc.y;
-        state.acc[2] = acc.z;
-
-        Vect gyro = pcb.get_rot();
-        state.gyro[0] = gyro.x;
-        state.gyro[1] = gyro.y;
-        state.gyro[2] = gyro.z;
-
-        state.buttons[0] = 0; state.buttons[1] = 0; 
-        state.buttons[2] = 0; state.buttons[3] = 0;
 
         pCharacteristic->setValue((uint8_t*)&state, sizeof(state));
         pCharacteristic->notify();

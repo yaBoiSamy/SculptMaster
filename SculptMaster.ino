@@ -22,6 +22,18 @@ void setup() {
 void loop() {
   Serial.println(pinch_detector.ReadPinch(PinchDetector::Finger::INDEX));
   pcb.update();
-  Serial.println(pcb.get_acc().str());
-  bleGlove.update(pcb);
+  Vect acc = pcb.get_acc();
+  Vect rot = pcb.get_rot();
+
+  GloveState state = {
+    {acc.x, acc.y, acc.z},   // acc
+    {rot.x, rot.y, rot.z},   // gyro
+    {
+      pinch_detector(PinchDetector::Finger::INDEX), 
+      pinch_detector(PinchDetector::Finger::MIDDLE), 
+      pinch_detector(PinchDetector::Finger::RING), 
+      pinch_detector(PinchDetector::Finger::PINKY)
+    }          // buttons
+  };
+  bleGlove.update(state);
 }
