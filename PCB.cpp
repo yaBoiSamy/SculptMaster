@@ -21,19 +21,44 @@ void PCB::init() {
 }
 
 void PCB::update() {
-  // event variables initialization and assignment
-  sensors_event_t a, g, temp; 
-  mpu.getEvent(&a, &g, &temp);
-  acceleration.x = a.acceleration.x; 
-  acceleration.y = a.acceleration.y; 
-  acceleration.z = a.acceleration.z;
-  rotSpeed.x = g.gyro.x;
-  rotSpeed.y = g.gyro.y;
-  rotSpeed.z = g.gyro.z;
-  lcd.update();
+    sensors_event_t a, g, temp; 
+    mpu.getEvent(&a, &g, &temp);
+    
+    // 1. Appliquer le lissage + Power Curve sur la rotation (Vitesse)
+    rotSpeed.x = computeSmoothing(g.gyro.x, smoothRot.x, POWER_EXPONENT);
+    rotSpeed.y = computeSmoothing(g.gyro.y, smoothRot.y, POWER_EXPONENT);
+    rotSpeed.z = computeSmoothing(g.gyro.z, smoothRot.z, POWER_EXPONENT);
+    
+    // Sauvegarde pour la prochaine frame
+    smoothRot = rotSpeed;
+
+    // Pas de power curve sur l'accélération pure, juste du lissage (exposant de 1.0)
+    acceleration.x = computeSmoothing(a.acceleration.x, smoothAcc.x, 1.0);
+    acceleration.y = computeSmoothing(a.acceleration.y, smoothAcc.y, 1.0);
+    acceleration.z = computeSmoothing(a.acceleration.z, smoothAcc.z, 1.0);
+    
+    // Sauvegarde pour la prochaine frame
+    smoothAcc = acceleration;
+    
+    lcd.update();
 }
 
-Vect PCB::get_acc() {
+float PCB::applyPowerCurve(float inputVal) {
+    float sign = (inputVal > 0) ? 1.0 : -1.0;
+    float absoluteVal = abs(inputVal);
+    float outputVal = sign * pow(absoluteVal, POWER_EXPONENT);
+    
+    return outputVal;
+}
+
+float PCB::computeSmoothing(float currentRaw, float previousSmoothed, float exponent) {
+    float smoothed = (currentRaw * SMOOTHING_FACTOR) + (previousSmoothed * (1 - SMOOTHING_FACTOR));
+    float sign = (smoothed > 0) ? 1.0 : -1.0;
+    float finalOutput = sign * pow(abs(smoothed), exponent);
+    return finalOutput;
+}
+
+Vect PCB::get_acc {
   return acceleration;
 }
 
