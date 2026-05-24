@@ -4,10 +4,10 @@
 Button::Button(int _pin){
   pin = _pin;
   state = 0;
-  pinMode(pin, OUTPUT);
+  pinMode(pin, INPUT_PULLDOWN);
 }
 
-bool Button::read(){
+bool Button::read() {
   isBouncing = isBouncing && !(millis() - lastStateChange > debounceDelay); // Update isBouncing in case it's timer ran out
 
   if (!isBouncing){
