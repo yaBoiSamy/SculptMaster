@@ -7,13 +7,12 @@ static BLEGlove bleGlove = BLEGlove();
 
 void setup() {
   Serial.begin(115200);
-  delay(500);
   bleGlove.setup();
+  delay(500);
   pcb.init();
 }
 
 void loop() {
   pcb.update();
-  //Serial.println(pcb.get_acc().str());
   bleGlove.update(pcb);
 }
